@@ -1,22 +1,5 @@
-* {
-  box-sizing: border-box;
-  line-height: 1.5;
-}
-
-body {
-  margin: 0;
-}
-
-#AppLayout {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
+@import "./styles/variables";
+@import "./styles/base";
+@import "./styles/screens/Intro";
+@import "./styles/screens/Game";
+@import "./styles/screens/Menu";

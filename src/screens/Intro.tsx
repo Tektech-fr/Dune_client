@@ -1,28 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { introImages } from "@datas/IntroDatas";
+import { introDatas } from "@datas/IntroDatas";
 
-export default function Intro() {
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+export default function Intro(): ReactElement {
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
-  const currentImage = introImages[currentImageIndex];
+  const handleClick = (direction: string) => {
+    if (isTransitioning) return;
 
-  const handleClick = () => {
-    if (currentImageIndex + 1 >= introImages.length) {
-      navigate("/game");
-    } else {
-      setCurrentImageIndex((prevIndex: number) => prevIndex + 1);
-    }
+    setCurrentIndex((prevIndex) => {
+      if (direction === "backward" && prevIndex > 0) {
+        setIsTransitioning(true);
+        return prevIndex - 1;
+      }
+
+      if (direction === "forward") {
+        if (prevIndex < introDatas.length - 1) {
+          setIsTransitioning(true);
+          return prevIndex + 1;
+        }
+
+        navigate("/game");
+      }
+
+      return prevIndex;
+    });
   };
 
+  useEffect(() => {
+    if (isTransitioning) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isTransitioning]);
+
   return (
-    <main id="AppLayout">
+    <div id="AppLayout">
+      <nav id="backward_area" onClick={() => handleClick("backward")} />
+
       <img
-        src={currentImage.src}
-        alt={currentImage.src}
-        onClick={handleClick}
+        src={introDatas[currentIndex].src}
+        alt={introDatas[currentIndex].alt}
+        className={isTransitioning ? "image-transition-enter" : ""}
       />
-    </main>
+
+      <p>{introDatas[currentIndex].txt}</p>
+
+      <nav id="forward_area" onClick={() => handleClick("forward")} />
+    </div>
   );
 }
